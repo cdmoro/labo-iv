@@ -1,52 +1,54 @@
 <template>
   <div>
     <b-navbar type="dark" variant="primary" class="mb-3">
-      <b-navbar-brand href="#">LABO IV</b-navbar-brand>
+      <b-navbar-brand href="#">LABO IV - Base de datos en la nube</b-navbar-brand>
       <b-button 
         class="ml-auto" 
         variant="light" 
         @click="restoreData"
-        :disabled="items.lenght == 0"
+        :disabled="animals.lenght == 0"
       >
-        <span v-show="items.length != 0">Restaurar</span>
-        <b-spinner v-show="items.length == 0" variant="primary" style="width: 1.5rem; height: 1.5rem" />
+        <span v-show="animals.length != 0">Restaurar</span>
+        <b-spinner v-show="animals.length == 0" variant="primary" style="width: 1.5rem; height: 1.5rem" />
       </b-button>
     </b-navbar>
     <b-container>
-        <h2 class="mb-4">Demo Base de datos en la nube</h2>
+        <h2>Animales ({{ animals.length }})</h2>
 
-        <b-table :busy="items.length == 0" outlined striped hover :items="items" :fields="fields">
-          <template v-slot:font="{ item }">
-            <i class="fab fa-fw fa-2x" :class="`fa-${item.font}`" :style="`color: ${item.color}`"></i>
-          </template>
-          <template v-slot:url="{ item }">
-            <a :href="item.url" target="_blank">{{ item.url }}</a>
-          </template>
-          <template v-slot:actions="{ item }">
-            <b-link 
-              type="button" 
-              v-b-tooltip 
-              title="Borrar"
-              @click="deleteRow(item.id)"
-            >
-              <i class="fas text-danger fa-trash"></i>
-            </b-link>
-          </template>
-        </b-table>
+        <b-card-group columns>
+          <b-card
+            v-for="animal in animals"
+            :key="animal.id"
+            :img-src="animal.stickerUrl"
+          >
+            <b-card-title class="d-flex mb-0">
+              <span class="flex-fill">{{ animal.name }}</span>
+              <b-link 
+                type="button" 
+                v-b-tooltip 
+                title="Borrar"
+                @click="deleteRow(animal.id)"
+              >
+                <i class="fas text-danger fa-thumbs-down"></i>
+              </b-link>
+            </b-card-title>
+          </b-card>
+        </b-card-group>
     </b-container>
   </div>
 </template>
 
 <script>
 import { db } from './db'
+import Animal from '../models/Animal'
 
 export default {
   firebase: {
-    items: db.ref('social')
+    animals: db.ref('social')
   },
   methods: {
     restoreData() {
-      db.ref('social').set(this.itemsBack)
+      db.ref('social').set(this.animalsBack)
     },
     deleteRow(id) {
       db.ref('social').child(id).remove()
@@ -54,59 +56,23 @@ export default {
   },
   data() {
     return {
-      items: [],
-      itemsBack: [
-        {
-          id: 0,
-          color: "#3954A1",
-          font: "facebook",
-          header: true,
-          nombre: "Facebook",
-          url: "http://www.facebook.com"
-        },
-        {
-          id: 1,
-          color: "#56D7FE",
-          font: "twitter",
-          header: true,
-          nombre: "Twitter",
-          url: "http://www.twitter.com",
-          visible: true
-        },
-        {
-          id: 2,
-          color: "#C0328D",
-          font: "instagram",
-          nombre: "Instagram",
-          url: "http://www.instagram.com",
-          visible: true
-        },
-        {
-          id: 3,
-          color: "#FF0000",
-          font: "youtube",
-          header: true,
-          nombre: "Youtube",
-          url: "http://www.youtube.com",
-          visible: true
-        },
-        {
-          id: 4,
-          color: "#1D8BBE",
-          font: "wordpress",
-          nombre: "Wordpress",
-          url: "http://www.wordpress.com",
-          visible: true
-        }
+      animals: [],
+      animalsBack: [
+        new Animal(0, 'grey', 'hippo', 'Hipopótamo', 'https://media.giphy.com/media/1lBHa6fa91MA1itBXp/giphy.gif'),
+        new Animal(1, 'green', 'dragon', 'Dragón', 'https://media.giphy.com/media/144Ou7cw4Gd74Q/giphy.gif'),
+        new Animal(2, 'pink', 'spider', 'Araña', 'https://media.giphy.com/media/xUA7bgGSAIxDSCrwXK/giphy.gif'),
+        new Animal(3, 'yellow', 'fish', 'Pez', 'https://media.giphy.com/media/86ZaveoUagZAQ/giphy.gif'),
+        new Animal(4, 'brown', 'otter', 'Nutria', 'https://media.giphy.com/media/fINnWyWeWZDVu/giphy.gif'),
+        new Animal(5, 'black', 'crow', 'Cuervo', 'https://media.giphy.com/media/7ZUgBDGY7U6be/giphy.gif'),
       ],
-      fields: [{key:"font", label:"Ícono"}, "nombre", "url", {key: "actions", label: " "}]
     };
   }
 };
 </script>
 
 <style>
-  table td {
-    vertical-align: middle !important;
+  .card-img {
+    height: 250px;
+    background: gray;
   }
 </style>
